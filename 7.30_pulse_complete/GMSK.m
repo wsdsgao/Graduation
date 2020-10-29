@@ -8,11 +8,12 @@ function [phi, I_sig_BB, Q_sig_BB, int_phi] = GMSK(bit_5, f_c, phi_last, g)
 %         GMSK调制Q路基带波形    Q_sig_BB
 %         对应当前bit的相位路径   int_phi             
 
+
 bit_rate = 16e6;  % 数据速率
 T = 1/bit_rate;  % 符号时间
 fs_IF = 1024e6;  % 中频信号采样频率
 oversamp_IF = T*fs_IF;  % 过采样倍数
-T_s_IF = 1/fs_IF;  % 采样时间 
+T_s_IF = 1/fs_IF;  % 采样时间
 BT = 0.3;  % 高斯滤波器 BT带宽
 
 c_bit = bit_5;

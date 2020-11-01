@@ -21,7 +21,7 @@ if mode == 1
 
         phi_last = 0;
         preamble = double(xor(pn_lib_1(idx,:), pn));  % 原始同步头序列与扰码序列异或得到最终的同步头序列
-        preamble = 2*preamble-1;
+        preamble = 2*preamble-1;  %双极性
         for i = 1:num_bits_pn
 
             if (i==1)
@@ -37,7 +37,7 @@ if mode == 1
             end
 
             [phi_last, I_sig, Q_sig, phi_int] = GMSK(bit_5, f_trans, phi_last, g);
-            wav_S1_1024(idx, (i-1)*oversamp+1:(i)*oversamp) = complex(I_sig, Q_sig);
+            wav_S1_1024(idx, (i-1)*oversamp+1:(i)*oversamp) = complex(I_sig, Q_sig);  %创建复数
 
         end
         wav_S1(idx, :) = wav_S1_1024(idx, 8:8:end);
@@ -265,7 +265,7 @@ else
 
     end
     
-    wav_S1 = repmat(wav_S1_temp, [2,1]);
+    wav_S1 = repmat(wav_S1_temp, [2,1]);  %重复
     wav_S2 = repmat(wav_S2_temp, [2,1]);
 
 end

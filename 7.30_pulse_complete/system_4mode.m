@@ -37,18 +37,18 @@ bit_rate = 16e6;  % 符号速率
 T = 1/bit_rate;  % 符号时间
 num_bits_pulse = 304;  % 2M_A\500K\250K脉冲长度（包含前后同步头）, 2M_B 脉冲去掉前后跳数据部分后的长度
 
-fs_IF = 1024e6;  % 射频、中频频信号采样速率
+fs_IF = 1024e6;  % 射频、中频信号采样速率
 fs_BB = 128e6;  % 基带信号采样速率
 oversamp_BB = T * fs_BB;  % 基带信号过采样速率
 oversamp_IF = T * fs_IF;  % 射频、中频信号过采样速率
 T_s_BB = 1/fs_BB;  % 基带采样间隔
 T_s_IF = 1/fs_IF;  % 射频、中频采样间隔
-BER = zeros(1,15);
+BER = zeros(1,15); %误比特率
 Eb_N0 = 1: 1: 14;
 
 % 载入已存数据
-load('lib/g_1024.mat');  % GMSK调制 g函数 
-load('lib/f_trans.mat');  % 21个频点
+load('lib/g_1024.mat');  % GMSK调制 g函数(高斯低通滤波器)
+load('lib/f_trans.mat');  % 21个频点（由PN序列得）
 % 接收端滤波器
 load('lib/filter/BPF_CHAN1_UD.mat');  % 带通 通道1
 load('lib/filter/BPF_CHAN2_UD.mat');  % 带通 通道2
@@ -85,7 +85,7 @@ else
 end
 
 % 生成PN库、跳频图案、跳时图案、生成数据矩阵 
-bits = data_gen(mat_row, mode);   % 双极性码
+bits = data_gen(mat_row, mode);   % 双极性码（还包含了同步头，只有B没有）
 [th_pat_lib_1, fh_pat_lib_1] = TF_gen;   % 跳频、跳时总图案1
 [th_pat_lib_2, fh_pat_lib_2] = TF_gen;   % 跳频、跳时总图案2
 
@@ -118,9 +118,9 @@ bits = data_gen(mat_row, mode);   % 双极性码
 
 % 检查矩阵 （用于解调后统计误码率）
 if mode == 1
-    for i = 1:mat_row/num_pulses
+    for i = 1:mat_row/num_pulses  %帧数
         for j = 1:num_pulses
-            bit_frame((j-1)*256+1:j*256) = bits((i-1)*num_pulses+j,25:280);
+            bit_frame((j-1)*256+1:j*256) = bits((i-1)*num_pulses+j,25:280);  %相当于挑出数据位，重新排列成一行
         end
         bit_check(i,:) = bit_frame;
     end

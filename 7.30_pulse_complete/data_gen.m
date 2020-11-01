@@ -4,8 +4,8 @@ function [bits_sync] = data_gen(mat_row, mode)
 
 switch mode 
     case 1
-        preamble_mat = zeros(mat_row, 24);
-        bits_rand = randi([0,1], [mat_row,256]);  
+        preamble_mat = zeros(mat_row, 24);  %行*列
+        bits_rand = randi([0,1], [mat_row,256]);  %区间内随机的整数
         bits_sync = [preamble_mat, bits_rand, preamble_mat];
     case 2
         bits_sync = randi([0,1], [mat_row, 6144]);

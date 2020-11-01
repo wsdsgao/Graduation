@@ -44,7 +44,7 @@ switch mode
         frame_idx = 0;
         for i = 1:mat_row
 
-            % 每发送完一帧 重新选择一次跳频、跳时图案
+            % 每发送完一帧 重新选择一次跳频、跳时图案和同步头序列
             if (mod(i-1,12)==0)
                 frame_idx = frame_idx + 1; 
                 a = rand(1);
@@ -131,7 +131,7 @@ switch mode
             th = th_pat(mod(i-1,12)+1);
             temp_S = [zeros(1, th/2*oversamp_IF), signal_trans_temp_IF(i,:), zeros(1, th/2*oversamp_IF)];
             signal_trans(last+1:last+length(temp_S)) = temp_S;
-            last = last+length(temp_S);
+            last = last+length(temp_S);  %都排成一行
         end
         
     % 2Mbps B 模式
@@ -202,14 +202,14 @@ switch mode
                 th = th_pat(mod(j-1,12)+1);
                 bits_trans = [bits(i, frame_last_bit+1:frame_last_bit+th/2), preamble_S1, bits(i, frame_last_bit+th/2+1:frame_last_bit+th/2+256), preamble_S2, bits(i, frame_last_bit+th/2+257:frame_last_bit+th/2+256+th/2)]; 
                 frame_last_bit = frame_last_bit + 256 + th;
-                signal_trans_temp_BB = zeros(1, (304+3+th)*oversamp_IF);
+                signal_trans_temp_BB = zeros(1, (304+3+th)*oversamp_IF);  %冗余3bit
                 for jj = 1:304+th+3   % 每一个脉冲: (304+th+3)bit长度的波形
 
                     % 对不同位置，取5bit数据，准备送入调制模块
 
                     % 前数据段
                     if (jj == 1)
-                        bit_5 = [1, 1, 1, 1, 1];
+                        bit_5 = [1, 1, 1, 1, 1];  %冗余的3bit都是1
                     elseif (jj == 2)
                         bit_5 = [1, 1, 1, 1, bits_trans(1)];
                     elseif (jj == 3)
@@ -267,7 +267,7 @@ switch mode
                 Q_sig_IF = sin(2*pi*f_IF*t_mod);
                 signal_trans_temp_IF = signal_trans_temp_BB .* complex(I_sig_IF, Q_sig_IF);  % 不连续相位调制，每一个脉冲的载波的起始相位都为0
 %                 signal_trans_temp_IF = signal_trans_temp_BB;
-                temp = [zeros(1, 100*oversamp_IF), signal_trans_temp_IF];
+                temp = [zeros(1, 100*oversamp_IF), signal_trans_temp_IF];  %100bit的固定间隔，但A并没加
                 signal_trans_temp(last+1:last+(100+num_bits_pulse(j))*oversamp_IF) = temp;
                 last = last + (100+num_bits_pulse(j))*oversamp_IF;
             end
@@ -410,7 +410,7 @@ switch mode
                 last = last+length(temp_S);
             else
                 th = th_pat(mod(i-1,num_pulses)+1);
-                temp_S = [zeros(1, th/2*oversamp_IF), signal_trans_temp_IF(i,:), zeros(1, th/2*oversamp_IF), zeros(1, 10*oversamp_IF)];
+                temp_S = [zeros(1, th/2*oversamp_IF), signal_trans_temp_IF(i,:), zeros(1, th/2*oversamp_IF), zeros(1, 10*oversamp_IF)];  %这个10bit是哪的？
                 signal_trans(last+1:last+length(temp_S)) = temp_S;
                 last = last+length(temp_S);
             end

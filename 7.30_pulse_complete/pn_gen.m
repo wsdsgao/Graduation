@@ -28,7 +28,7 @@ for i = 1:num_pulses
     pn_lib_S4_temp(i,:) = randi([0,1], [1,num_bits_pn_2]);
 end
 
-pn_lib_S1 = repmat(pn_lib_S1_temp, [2,1]);
+pn_lib_S1 = repmat(pn_lib_S1_temp, [2,1]);  %÷ÿ∏¥£∫48*2=96––
 
 pn_lib_S2 = repmat(pn_lib_S2_temp, [2,1]);
 

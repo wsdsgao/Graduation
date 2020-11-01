@@ -2,8 +2,8 @@ function [wav_S1_1_f, wav_S2_1_f, wav_S1_2_f, wav_S2_2_f] = wavLPF(wav_S1_1, wav
 
 % 将本地生成的对应各同步序列的波形经过接收部分的基带信号低通滤波器，将最终经过低通滤波后且一个符号对应1个最佳采样点的波形，用于与同步头接收波形做互相关运算
 
-num_pulses = size(wav_S1_1, 1);
-oversamp = 8;
+num_pulses = size(wav_S1_1, 1);  %返回矩阵的行数，即脉冲数
+oversamp = 8;  %基带的过采样倍数
 
 wav_S1_1_f = zeros(size(wav_S1_1,1), size(wav_S1_1, 2)/8);
 wav_S2_1_f = zeros(size(wav_S2_1,1), size(wav_S2_1, 2)/8);

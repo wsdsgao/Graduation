@@ -145,8 +145,6 @@ end
 
 % 信噪比0:17 循环
 for SNR_idx = 10:10 %1:length(Eb_N0)
-   
-    SNR_idx
 
     N0 = 1/10^(Eb_N0(SNR_idx)/10);  % 计算当前信噪比对应的高斯白噪声功率谱密度值 N0
 
@@ -181,19 +179,19 @@ for SNR_idx = 10:10 %1:length(Eb_N0)
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%     result = receiver(rx, fh_pat_lib_1, th_pat_lib_1, fh_pat_lib_2, th_pat_lib_2, ...
-%                         wav_S1_1_LPF_mode1, wav_S1_2_LPF_mode1, wav_S2_1_LPF_mode1, wav_S2_2_LPF_mode1, ...
-%                         wav_S1_1_LPF_mode2, wav_S1_2_LPF_mode2, wav_S2_1_LPF_mode2, wav_S2_2_LPF_mode2, ...
-%                         wav_S1_S3_1_LPF_mode3, wav_S4_S2_1_LPF_mode3, wav_S1_S3_2_LPF_mode3, wav_S4_S2_2_LPF_mode3, ...
-%                         wav_S1_S3_1_LPF_mode4, wav_S4_S2_1_LPF_mode4, wav_S1_S3_2_LPF_mode4, wav_S4_S2_2_LPF_mode4, ...
-%                         frame_num);
+    result = receiver(rx, fh_pat_lib_1, th_pat_lib_1, fh_pat_lib_2, th_pat_lib_2, ...
+                        wav_S1_1_LPF_mode1, wav_S1_2_LPF_mode1, wav_S2_1_LPF_mode1, wav_S2_2_LPF_mode1, ...
+                        wav_S1_1_LPF_mode2, wav_S1_2_LPF_mode2, wav_S2_1_LPF_mode2, wav_S2_2_LPF_mode2, ...
+                        wav_S1_S3_1_LPF_mode3, wav_S4_S2_1_LPF_mode3, wav_S1_S3_2_LPF_mode3, wav_S4_S2_2_LPF_mode3, ...
+                        wav_S1_S3_1_LPF_mode4, wav_S4_S2_1_LPF_mode4, wav_S1_S3_2_LPF_mode4, wav_S4_S2_2_LPF_mode4, ...
+                        frame_num);
 
       
-%     [a,b] = size(bit_check); 
-%     error = sum(sum(abs(bit_check-result)/2 == 1));
-%     miss = sum(sum(abs(bit_check-result)/2 == 0.5));
-%     total = a*b-miss;
-%     pe(SNR_idx)=error/(total);
+    [a,b] = size(bit_check); 
+    error = sum(sum(abs(bit_check-result)/2 == 1));
+    miss = sum(sum(abs(bit_check-result)/2 == 0.5));
+    total = a*b-miss;
+    pe(SNR_idx)=error/(total);
     
 end
 

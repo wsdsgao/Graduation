@@ -36,10 +36,10 @@ S_lpf = 30;
 S_lpf2 = 127;
 S_bpf = 253;
  
-Wav_str_Cap_mat = zeros(nn, time_frame*oversamp_IF);
+Wav_str_Cap_mat = zeros(nn, time_frame*oversamp_IF);  %一行就是一帧
 % 间隔8个采样点提取一路波形，共8路
 for offset = 1:nn
-    Wav_str_Cap_mat(offset,:) = rx(1+(offset-1)*8:time_frame*oversamp_IF+(offset-1)*8);
+    Wav_str_Cap_mat(offset,:) = rx(1+(offset-1)*8:time_frame*oversamp_IF+(offset-1)*8);  %offset就是偏移量
 end
 
 Wav_str_Cap_F_temp = zeros(num_pulses, num_bits_pulse*oversamp_IF, nn);

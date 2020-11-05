@@ -36,8 +36,8 @@ counter = 0;
 flag_Capture_C = 0;  % 指示是否捕获到一帧
 
 % 各模式一帧总长度
-time_frame_mode1 = (304*12+512*6);
-time_frame_mode2 = (304*12+512*6+103*12);
+time_frame_mode1 = (304*12+512*6);  %算了跳时
+time_frame_mode2 = (304*12+512*6+103*12);  %算了固定的时间间隔
 time_frame_mode3 = (304*12+512*6)*4;
 time_frame_mode4 = (304*12+512*6)*8;
 
@@ -131,7 +131,7 @@ for i = 1:length(rx)-time_frame_mode2*oversamp_IF   % 等待一帧的时间长度
                 pos_pulse_mode1 = sum(th_pat_1_mode1(1:pulse_idx-1)) + (pulse_idx-1)*num_bits_pulse + th_pat_1_mode1(pulse_idx)/2;
             end
 
-            % 射频 -> 中频
+            % 射频 -> 中频 （只取出数据位）
             if (f_idx >= 1) && (f_idx <= 5)    
                 wav_temp1_mode1 = downConv_IF(temp_rx_mode1(pos_pulse_mode1*oversamp_IF+1:pos_pulse_mode1*oversamp_IF+num_bits_pulse*oversamp_IF), BPF_CHAN1, BPF_CHAN12_2, 240e6 - f_trans(3), 0);  % 通道1
             elseif (f_idx >= 6) && (f_idx <= 10)
@@ -184,11 +184,11 @@ for i = 1:length(rx)-time_frame_mode2*oversamp_IF   % 等待一帧的时间长度
         rx_pulse_mat_2_mode1 = downConv(wav_temp_mode1(:,:,2), num_pulses_mode1, fh_pat_2_mode1);  % 对应后10ms
 
 
-        % 预取前后24bit位置的波形 等待后续处理
+        % 预取前后24bit位置的波形（即同步头） 等待后续处理
         % 前10ms
-        D_S1_1_mode1 = rx_pulse_mat_1_mode1(:,1:24*oversamp_BB);
-        D_S1_1_one_mode1 = D_S1_1_mode1(:,8:oversamp_BB:end);
-        D_S2_1_mode1 = rx_pulse_mat_1_mode1(:,2240+1:2240+24*oversamp_BB);
+        D_S1_1_mode1 = rx_pulse_mat_1_mode1(:,1:24*oversamp_BB);  %一行是一个脉冲
+        D_S1_1_one_mode1 = D_S1_1_mode1(:,8:oversamp_BB:end);  %和数据速率相同，一个点对应一个bit
+        D_S2_1_mode1 = rx_pulse_mat_1_mode1(:,2240+1:2240+24*oversamp_BB);  %2240=280*oversamp_BB
         D_S2_1_one_mode1 = D_S2_1_mode1(:,8:oversamp_BB:end);
 
         % 后10ms
@@ -232,7 +232,7 @@ for i = 1:length(rx)-time_frame_mode2*oversamp_IF   % 等待一帧的时间长度
             rx_wav_S1_pat_2_mode1 = D_S1_2_one_mode1(j,1:22) .* conj(wav_S1_2_mode1(j,1:22));
             rx_wav_S2_pat_2_mode1 = D_S2_2_one_mode1(j,1:22) .* conj(wav_S2_2_mode1(j,1:22));   
 
-            rx_corr_S1_pat_2_mode1(j) = abs(sum(rx_wav_S1_pat_2_mode1));
+            rx_corr_S1_pat_2_mode1(j) = abs(sum(rx_wav_S1_pat_2_mode1));  %求一行的和
             rx_corr_S2_pat_2_mode1(j) = abs(sum(rx_wav_S2_pat_2_mode1));
 
         end
@@ -265,7 +265,7 @@ for i = 1:length(rx)-time_frame_mode2*oversamp_IF   % 等待一帧的时间长度
         temp_rx_mode2 = rx(i:i+time_frame_mode2*oversamp_IF-1);
         % 根据跳频图案对应的频点找到对应通道的波形
         % 两个连续10ms的图案
-        wav_temp_mode2 = zeros(num_pulses_mode2, num_bits_pulse * oversamp_IF ,2);
+        wav_temp_mode2 = zeros(num_pulses_mode2, num_bits_pulse * oversamp_IF ,2);  %没包含跳时的数据
         % 第1个跳时跳频图案
         for pulse_idx = 1:num_pulses_mode2
             f_idx = fh_pat_1_mode2(pulse_idx);  % 当前脉冲对应的频点
@@ -273,8 +273,9 @@ for i = 1:length(rx)-time_frame_mode2*oversamp_IF   % 等待一帧的时间长度
             % 计算当前脉冲在一帧中的起始位置
             if pulse_idx == 1
                 pos_pulse_mode2 = 100;
+                
             else
-                pos_pulse_mode2 = sum(th_pat_1_mode2(1:pulse_idx-1)) + 3 * (pulse_idx-1) + (pulse_idx-1)*num_bits_pulse + 100 * pulse_idx;
+                pos_pulse_mode2 = sum(th_pat_1_mode2(1:pulse_idx-1)) + 3 * (pulse_idx-1) + (pulse_idx-1)*num_bits_pulse + 100 * pulse_idx;  %要改
             end  
 
             % 计算当前脉冲的长度
@@ -293,7 +294,7 @@ for i = 1:length(rx)-time_frame_mode2*oversamp_IF   % 等待一帧的时间长度
                 wav_temp1_mode2 = downConv_IF(temp_rx_mode2(pos_pulse_mode2*oversamp_IF+1:pos_pulse_mode2*oversamp_IF+num_bits_pulse_rx*oversamp_IF), BPF_CHAN5, BPF_CHAN5_2, f_trans(20) - 240e6, 1);  % 通道5 
             end
 
-            wav_temp_mode2(pulse_idx,:,1) = wav_temp1_mode2((th_pat_1_mode2(pulse_idx)/2+3)*oversamp_IF+1:(th_pat_1_mode2(pulse_idx)/2+3+num_bits_pulse)*oversamp_IF);
+            wav_temp_mode2(pulse_idx,:,1) = wav_temp1_mode2((th_pat_1_mode2(pulse_idx)/2+3)*oversamp_IF+1:(th_pat_1_mode2(pulse_idx)/2+3+num_bits_pulse)*oversamp_IF);  %没包含跳时的数据
         end
 
 
@@ -411,7 +412,7 @@ for i = 1:length(rx)-time_frame_mode2*oversamp_IF   % 等待一帧的时间长度
 
     % for mode3
     
-        % 截取对应12个脉冲长度的波形
+        % 截取对应48个脉冲长度的波形
         temp_rx_mode3 = rx(i:i+time_frame_mode3*oversamp_IF-1);
         
         % 根据跳频图案对应的频点找到对应通道的波形
@@ -584,7 +585,7 @@ for i = 1:length(rx)-time_frame_mode2*oversamp_IF   % 等待一帧的时间长度
 
     % for mode4
     
-        % 截取对应12个脉冲长度的波形
+        % 截取对应96个脉冲长度的波形
         temp_rx_mode4 = rx(i:i+time_frame_mode4*oversamp_IF-1);
         
         % 根据跳频图案对应的频点找到对应通道的波形
@@ -799,7 +800,7 @@ for i = 1:length(rx)-time_frame_mode2*oversamp_IF   % 等待一帧的时间长度
             time_frame = time_frame_mode2;      % 一帧的总长度(含跳时)
             rx_Cap = rx(i:i+time_frame*oversamp_IF+oversamp_IF*2);
             result_frame = receiver_Cap_mode2(rx_Cap, fh_pat_rec, th_pat_rec, wav_S1_rec, wav_S2_rec, tag, time_frame, num_pulses_rec);  % 送入2Mbps B模式对应的解调模块解调
-            result(ceil((i+(time_frame-0.5)*oversamp_IF)/(time_frame*oversamp_IF)), 1:length_frame) = result_frame;  % 记录解调结果
+            result(ceil((i+(time_frame-0.5)*oversamp_IF)/(time_frame*oversamp_IF)), 1:length_frame) = result_frame;  % 记录解调结果（取整）
             
         elseif mode_sel == 3
             num_pulses_rec = num_pulses_mode3;  % 一帧的脉冲总数
@@ -848,7 +849,7 @@ for i = 1:length(rx)-time_frame_mode2*oversamp_IF   % 等待一帧的时间长度
         flag_frame = 1; 
         tag = 0;
        
-        if frame_counter == frame_num+1
+        if frame_counter == frame_num+1  %5帧数据已经全部解调完毕
             return 
         end
    

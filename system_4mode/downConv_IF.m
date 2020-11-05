@@ -13,9 +13,9 @@ t_240 = t_240_chip(1:end) + (T/oversamp_IF/2);  % 中心对称;
 
 S_bpf = 253;
 
-rx_chan_temp = conv(rx, BPF_CHAN_1);
+rx_chan_temp = conv(rx, BPF_CHAN_1);  %第一次带通滤波
 rx_chan = rx_chan_temp(S_bpf+1:S_bpf+length(rx));
-% 变换至中频240MHz 
+% 变换至中频240MHz（，再带通滤波）
 % 通道1～4(indi==0): 取和频        
 % 通道5(indi==1): 取差频
 if (~indi) 

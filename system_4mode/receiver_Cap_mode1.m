@@ -36,7 +36,7 @@ S_lpf = 30;
 S_lpf2 = 127;
 S_bpf = 253;
  
-Wav_str_Cap_mat = zeros(nn, time_frame*oversamp_IF);  %一行就是一帧
+Wav_str_Cap_mat = zeros(nn, time_frame*oversamp_IF);  %一行就是一帧的长度
 % 间隔8个采样点提取一路波形，共8路
 for offset = 1:nn
     Wav_str_Cap_mat(offset,:) = rx(1+(offset-1)*8:time_frame*oversamp_IF+(offset-1)*8);  %offset就是偏移量
@@ -118,9 +118,9 @@ elseif (tag == 2) || (tag == 4)
 end
 
 
-% 取9路波形 间隔1个采样点
+% 取9路波形 间隔1个采样点（再精确）
 for offset = 1:9
-    Wav_str_Cap_mat(offset,:) = rx((pos_Corr-1)*8+(offset-1)-4:time_frame*oversamp_IF+(pos_Corr-1)*8+(offset-1)-4-1);
+    Wav_str_Cap_mat(offset,:) = rx((pos_Corr-1)*8+(offset-1)-4:time_frame*oversamp_IF+(pos_Corr-1)*8+(offset-1)-4-1);  %4是8的一半
 end            
 
 Wav_str_Cap_F_temp2 = zeros(num_pulses, num_bits_pulse*oversamp_IF, 9);
@@ -241,7 +241,7 @@ D_S1_one = D_S1(:,8:oversamp_BB:end);
 D_S2 = rx_pulse_mat_FNL(:,2240+1:2240+24*oversamp_BB);
 D_S2_one = D_S2(:,8:oversamp_BB:end);
 
-zk_S1 = zeros(num_pulses, (num_bits_pn-2));
+zk_S1 = zeros(num_pulses, (num_bits_pn-2));  %为了精确所以只选前22bit
 zk_S2 = zeros(num_pulses, (num_bits_pn-2));
 for j = 1:num_pulses                  
     zk_S1(j,:) = D_S1_one(j,1:num_bits_pn-2) .* conj(wav_S1(j,1:num_bits_pn-2));
@@ -298,5 +298,5 @@ end
 
 % 解调结果组成完整的一帧
 for pulse_idx = 1:num_pulses
-    result((pulse_idx-1)*256+1:pulse_idx*256) = out_temp(pulse_idx, 24:end);
+    result((pulse_idx-1)*256+1:pulse_idx*256) = out_temp(pulse_idx, 24:end);  %只有数据
 end

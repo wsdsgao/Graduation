@@ -35,8 +35,8 @@ function corr_value = corr(rx, wav_S1_S3_mode4, wav_S4_S2_mode4, mode)
 
             rx_wav_S1_pat_mode1_1 = D_S1_one_mode1(j,1:8) .* (wav_S1_S3_mode4(j,1:8));
             rx_wav_S1_pat_mode1_2 = D_S1_one_mode1(j,9:16) .* conj(wav_S1_S3_mode4(j,9:16));
-            rx_wav_S1_pat_mode1_3 = D_S1_one_mode1(j,17:22) .* conj(wav_S1_S3_mode4(j,17:22)); %考虑一下是否为1-22比较合理
-            rx_wav_S2_pat_mode1_1 = D_S2_one_mode1(j,3:8) .* (wav_S4_S2_mode4(j,24:29)); %考虑一下是否为24-45比较合理
+            rx_wav_S1_pat_mode1_3 = D_S1_one_mode1(j,17:24) .* conj(wav_S1_S3_mode4(j,17:24)); %考虑一下是否为1-22比较合理
+            rx_wav_S2_pat_mode1_1 = D_S2_one_mode1(j,1:8) .* (wav_S4_S2_mode4(j,22:29)); %考虑一下是否为24-45比较合理
             rx_wav_S2_pat_mode1_2 = D_S2_one_mode1(j,9:16) .* conj(wav_S4_S2_mode4(j,30:37));
             rx_wav_S2_pat_mode1_3 = D_S2_one_mode1(j,17:24) .* conj(wav_S4_S2_mode4(j,38:45));   
 
@@ -66,8 +66,8 @@ function corr_value = corr(rx, wav_S1_S3_mode4, wav_S4_S2_mode4, mode)
 
             rx_wav_S1_pat_mode2_1 = D_S1_one_mode2(j,1:8) .* conj(wav_S1_S3_mode4(j,1:8));
             rx_wav_S1_pat_mode2_2 = D_S1_one_mode2(j,9:16) .* (wav_S1_S3_mode4(j,9:16));
-            rx_wav_S1_pat_mode2_3 = D_S1_one_mode2(j,17:22) .* conj(wav_S1_S3_mode4(j,17:22)); %考虑一下是否为1-22比较合理
-            rx_wav_S2_pat_mode2_1 = D_S2_one_mode2(j,3:8) .* conj(wav_S4_S2_mode4(j,24:29)); %考虑一下是否为24-45比较合理
+            rx_wav_S1_pat_mode2_3 = D_S1_one_mode2(j,17:24) .* conj(wav_S1_S3_mode4(j,17:24)); %考虑一下是否为1-22比较合理
+            rx_wav_S2_pat_mode2_1 = D_S2_one_mode2(j,1:8) .* conj(wav_S4_S2_mode4(j,22:29)); %考虑一下是否为24-45比较合理
             rx_wav_S2_pat_mode2_2 = D_S2_one_mode2(j,9:16) .* (wav_S4_S2_mode4(j,30:37));
             rx_wav_S2_pat_mode2_3 = D_S2_one_mode2(j,17:24) .* conj(wav_S4_S2_mode4(j,38:45));  
 

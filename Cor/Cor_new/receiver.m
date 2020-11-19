@@ -91,7 +91,7 @@ S_bpf = 253;
 
 %考虑一下前后是否还需补0，以及要是一帧被连续捕获了好几次怎么办？！
 
-for i = 90:1:length(rx)-time_frame_mode1*oversamp_IF+1   % 等待一帧的时间长度
+for i = 20:5:200   % 等待一帧的时间长度
     
     %   % 解调完一帧，等待一帧时间长度再做捕获（仿真用）
     %   if (flag_frame)  
@@ -146,8 +146,11 @@ for i = 90:1:length(rx)-time_frame_mode1*oversamp_IF+1   % 等待一帧的时间长度
 
         % 根据跳频图案对应的频点将对应通道的波形滤波至零中频
         % wav_temp(采样率1024) -> rx_pulse_mat(采样率64)
-        rx_pulse_mat_mode1 = downConv1(wav_temp_mode1(:,:), num_pulses_mode1, fh_pat_mode1);  % 对应前10ms
+        rx_pulse_mat_mode1 = downConv(wav_temp_mode1(:,:), num_pulses_mode1, fh_pat_mode1);  % 对应前10ms
         % rx_pulse_mat_2_mode1 = downConv(wav_temp_mode1(:,:,2), num_pulses_mode1, fh_pat_2_mode1);  % 对应后10ms
+
+        % plot(real(rx_pulse_mat_mode1(1, :)));
+        % value = sum(abs(rx_pulse_mat_mode1(1, :)))
 
 
         % % 预取前后24bit位置的波形（即同步头） 等待后续处理
@@ -188,8 +191,10 @@ for i = 90:1:length(rx)-time_frame_mode1*oversamp_IF+1   % 等待一帧的时间长度
 
         corr_value_mode1 = sum(rx_corr_pat_mode1);
 
-        % 求前后同步头相关峰
-        % corr_value_mode1 = corr(rx_pulse_mat_mode1, wav_S1_S3_mode4, wav_S4_S2_mode4, 1);
+        corr_value_mode1_plot1((i-20)/5+1) = corr_value_mode1;
+
+        % 求前后同步头相关峰(改进算法)
+        corr_value_mode1_plot2((i-20)/5+1) = corr(rx_pulse_mat_mode1, wav_S1_S3_mode4, wav_S4_S2_mode4, 1);
         % rx_corr_S1_pat_mode1 = zeros(1,num_pulses_mode1);
         % rx_corr_S2_pat_mode1 = zeros(1,num_pulses_mode1);
         % rx_corr_pat_mode1 = zeros(1,num_pulses_mode1);
@@ -230,7 +235,7 @@ for i = 90:1:length(rx)-time_frame_mode1*oversamp_IF+1   % 等待一帧的时间长度
         
         % 同步捕获判决条件
         % 前(或后)同步头相关峰值大于阈值
-        if (corr_value_mode1 > 40*num_pulses_mode1) %判决条件要和信号能量去比，还没加
+        if (corr_value_mode1 > 44*num_pulses_mode1) %判决条件要和信号能量去比，还没加
             mode_sel = 1;
             flag_Capture_C = 1;
             % if (sum(rx_corr_S1_pat_1_mode1) > sum(rx_corr_S2_pat_1_mode1))
@@ -383,7 +388,7 @@ for i = 90:1:length(rx)-time_frame_mode1*oversamp_IF+1   % 等待一帧的时间长度
 
          % 同步捕获判决条件
          % 前(或后)同步头相关峰值大于阈值       
-        if (corr_value_mode2 > 40*num_pulses_mode2) 
+        if (corr_value_mode2 > 44*num_pulses_mode2) 
             mode_sel = 2;
             flag_Capture_C = 1; 
             % if (sum(rx_corr_S1_pat_1_mode2) > sum(rx_corr_S2_pat_1_mode2))
@@ -755,11 +760,16 @@ for i = 90:1:length(rx)-time_frame_mode1*oversamp_IF+1   % 等待一帧的时间长度
         %         tag = 4
         %      end
 
-         end
+        end
    
-         disp(i);
-         
+        disp(i);
+        % figure(1);
+        % plot(real(D_S1_one_mode1(1,:)));
+        % figure(2);
+        % plot(real(wav_S1_mode1(1,:)));
+
     end % (~flag_Capture_C)
+
     % 捕获成功
     % 根据判定的速率模式送入对应的解调模块
     if (flag_Capture_C == 1)
@@ -858,3 +868,9 @@ for i = 90:1:length(rx)-time_frame_mode1*oversamp_IF+1   % 等待一帧的时间长度
 
 end  % (for i = ...)
 
+figure(3);
+k=1:37;
+plot(k, corr_value_mode1_plot1);
+figure(4);
+k=1:37;
+plot(k, corr_value_mode1_plot2);

@@ -1,6 +1,6 @@
-function result = receiver_Cap_mode3(rx, fh_pat, th_pat, wav_S1_S3_mode4, wav_S4_S2_mode4, wav_S1_S3, wav_S4_S2, time_frame, num_pulses)
+function result = receiver_Cap_mode3(rx, fh_pat, th_pat, wav_S1_S3, wav_S4_S2, time_frame, num_pulses)
 
-% 500Kbps模式 的解调模块
+% 250Kbps模式 的解调模块
 
 % 参数定义
 oversamp_IF = 64; % 射频、中频信号过采样速率
@@ -47,7 +47,7 @@ Wav_str_Cap_F_temp = zeros(num_pulses, num_bits_pulse*oversamp_IF, nn);
 
 % Corr_S1_S3 = zeros(1, nn);
 % Corr_S4_S2 = zeros(1, nn);  
-Corr_mode3 = zeros(1, nn); 
+Corr_mode4 = zeros(1, nn);
 for offset = 1:nn
 
     temp_rx = Wav_str_Cap_mat(offset,:);
@@ -84,7 +84,7 @@ for offset = 1:nn
     % wav_temp(采样率1024) -> rx_pulse_mat(采样率64)
     rx_pulse_mat = downConv_500K(Wav_str_Cap_F_temp(:,:,offset), num_pulses, fh_pat);
     
-    Corr_mode3(offset) = corr(rx_pulse_mat, wav_S1_S3_mode4, wav_S4_S2_mode4, 3);
+    Corr_mode4(offset) = corr(rx_pulse_mat, wav_S1_S3, wav_S4_S2, 4);
 
     % % 预取前后24+21bit位置的波形 等待后续处理
     % D_S1_S3 = rx_pulse_mat(:,1:45*oversamp_BB);
@@ -115,7 +115,7 @@ end
 % pos_Corr_S1_S3 = find(Corr_S1_S3 == max(Corr_S1_S3));
 % pos_Corr_S4_S2 = find(Corr_S4_S2 == max(Corr_S4_S2));          
 
-pos_Corr = find(Corr_mode3 == max(Corr_mode3));
+pos_Corr = find(Corr_mode4 == max(Corr_mode4));
 
 % if (tag == 1) || (tag == 3)
 %     pos_Corr = pos_Corr_S1_S3;
@@ -171,7 +171,7 @@ for offset = 1:9
     % wav_temp(采样率1024) -> rx_pulse_mat(采样率64)
     rx_pulse_mat = downConv(Wav_str_Cap_F_temp2(:,:,offset), num_pulses, fh_pat);
 
-    Corr_Cap_F(offset) = corr(rx_pulse_mat, wav_S1_S3_mode4, wav_S4_S2_mode4, 3);
+    Corr_Cap_F(offset) = corr(rx_pulse_mat, wav_S1_S3, wav_S4_S2, 4);
 
     % % 预取前后24bit位置的波形 等待后续处理
     % D_S1_S3 = rx_pulse_mat(:,1:45*oversamp_BB);
@@ -197,7 +197,7 @@ for offset = 1:9
 %     Corr_S1_S3_Cap_F(offset) = sum(rx_corr_S1_S3);
 %     Corr_S4_S2_Cap_F(offset) = sum(rx_corr_S4_S2);
 
-% end
+end
 
 % pos_Corr_S1_S3_F = find(Corr_S1_S3_Cap_F == max(Corr_S1_S3_Cap_F));
 % pos_Corr_S4_S2_F = find(Corr_S4_S2_Cap_F == max(Corr_S4_S2_Cap_F));  
@@ -214,7 +214,7 @@ for offset = 1:9
 %     offset_j = pos_Corr_S4_S2_F
 %     choose_flag = 2;
 
-end
+% end
 
 pos_Corr_F = find(Corr_Cap_F == max(Corr_Cap_F));
 

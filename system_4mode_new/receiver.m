@@ -80,9 +80,18 @@ S_lpf1 = 32;
 S_lpf2 = 32;
 S_bpf = 253;
 
+%生成本地波形（仅mode4用于同步捕获和精细校准）
+[wav_S1_mode1, wav_S2_mode1] = wav_gen(pn_lib_S1, pn_lib_S2, pn_lib_S3, pn_lib_S4, 1);
+
+[wav_S1_mode2, wav_S2_mode2] = wav_gen(pn_lib_S1, pn_lib_S2, pn_lib_S3, pn_lib_S4, 2);
+    
+[wav_S1_S3_mode3, wav_S4_S2_mode3] = wav_gen(pn_lib_S1, pn_lib_S2, pn_lib_S3, pn_lib_S4, 3);
+
+[wav_S1_S3_mode4, wav_S4_S2_mode4] = wav_gen(pn_lib_S1, pn_lib_S2, pn_lib_S3, pn_lib_S4, 4);
+
 %考虑一下前后是否还需补0，以及要是一帧被连续捕获了好几次怎么办？！
 
-for i = 1:length(rx)-time_frame_mode1*oversamp_IF+1   % 等待一帧的时间长度
+for i = 10:1:length(rx)-time_frame_mode1*oversamp_IF+1   % 等待一帧的时间长度
     
     %   % 解调完一帧，等待一帧时间长度再做捕获（仿真用）
     %   if (flag_frame)  
@@ -162,14 +171,6 @@ for i = 1:length(rx)-time_frame_mode1*oversamp_IF+1   % 等待一帧的时间长度
         %
         %%%%%%%%%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%             
 
-        %生成本地波形（仅mode4用于同步捕获和精细校准）
-        [wav_S1_mode1, wav_S2_mode1] = wav_gen(pn_lib_S1, pn_lib_S2, pn_lib_S3, pn_lib_S4, 1);
-
-        [wav_S1_mode2, wav_S2_mode2] = wav_gen(pn_lib_S1, pn_lib_S2, pn_lib_S3, pn_lib_S4, 2);
-
-        [wav_S1_S3_mode3, wav_S4_S2_mode3] = wav_gen(pn_lib_S1, pn_lib_S2, pn_lib_S3, pn_lib_S4, 3);
-
-        [wav_S1_S3_mode4, wav_S4_S2_mode4] = wav_gen(pn_lib_S1, pn_lib_S2, pn_lib_S3, pn_lib_S4, 4);
 
         % 求前后同步头相关峰
         corr_value_mode1 = corr(rx_pulse_mat_mode1, wav_S1_S3_mode4, wav_S4_S2_mode4, 1);
@@ -385,6 +386,10 @@ for i = 1:length(rx)-time_frame_mode1*oversamp_IF+1   % 等待一帧的时间长度
         end 
 
     % for mode3
+
+        if (i+time_frame_mode3*oversamp_IF-1) > length(rx)
+            continue;
+        end
     
         % 截取对应48个脉冲长度的波形
         temp_rx_mode3 = rx(i:i+time_frame_mode3*oversamp_IF-1);
@@ -559,6 +564,10 @@ for i = 1:length(rx)-time_frame_mode1*oversamp_IF+1   % 等待一帧的时间长度
 
     % for mode4
     
+        if (i+time_frame_mode4*oversamp_IF-1) > length(rx)
+            continue;
+        end
+
         % 截取对应96个脉冲长度的波形
         temp_rx_mode4 = rx(i:i+time_frame_mode4*oversamp_IF-1);
         
@@ -732,6 +741,8 @@ for i = 1:length(rx)-time_frame_mode1*oversamp_IF+1   % 等待一帧的时间长度
 
          end
    
+         disp(i);
+         
     end % (~flag_Capture_C)
     % 捕获成功
     % 根据判定的速率模式送入对应的解调模块

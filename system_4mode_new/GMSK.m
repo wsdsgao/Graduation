@@ -10,7 +10,7 @@ function [phi, I_sig_BB, Q_sig_BB, int_phi] = GMSK(bit_5, phi_last, g)
 
 bit_rate = 16e6;  % 数据速率
 T = 1/bit_rate;  % 符号时间
-fs_IF = 64e6;  % 基带信号采样频率
+fs_IF = 64e6;  % 中频信号采样频率
 oversamp_IF = T*fs_IF;  % 过采样倍数
 T_s_IF = 1/fs_IF;  % 采样时间
 BT = 0.3;  % 高斯滤波器 BT带宽
